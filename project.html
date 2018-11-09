@@ -8,7 +8,7 @@ layout: default
 
 <img src="https://4.bp.blogspot.com/-SuybhWyizhc/W-Tysf8-oxI/AAAAAAAAACc/swTRF8imMXcxXfSmwEPRp_AjIraRvvyewCLcBGAs/s1600/Dynamo.png" alt = "DynamoDB" height = "300" width = "500">
 
-<h3> DynamoDB is a NoSQL database that utilizes a primary to differentiate different records with the table. </h3>
+<h3> DynamoDB is a NoSQL database that utilizes a primary key to differentiate different records within the table. </h3>
 
 <h3>Post this, I had to provide my serverless functions the right permissions to access S3 and DynamoDB as well as CloudWatch. Hence, I created a new IAM role that provides the following permissions. </h3>
 
@@ -44,6 +44,9 @@ dynamoDB_client <span style="color: #333333">=</span> boto3<span style="color: #
 <h3> Each students JSON looked like below and these were the files I was uploading to S3 </h3>
 
 <img src="https://3.bp.blogspot.com/-jgvH8NfGdPI/W-T1ijcwC8I/AAAAAAAAADM/q3Gzx_dQpwwJouPE8il_3ooWzNQEY9XMQCLcBGAs/s1600/JSON.png" alt = "DynamoDB" height = "300" width = "350">
+
+<h3> Since I gave permissions for Lambdas to access CloudWatch, I was able to see the logs for each invocation of Lambdas. Also, this proved to be a good way to debug my code and view what the "Event" object contained as it was triggered from S3 </h3>
+<img src="https://2.bp.blogspot.com/-sHlmVN3BjSo/W-T4lTUtJbI/AAAAAAAAADo/KjpXdEhjqCE_F0YmLayypwL_zaw8Bg6CgCLcBGAs/s1600/logs.png" alt = "DynamoDB" height = "300" width = "600">
 
 
 
