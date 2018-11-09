@@ -1,37 +1,50 @@
-## Welcome to GitHub Pages
+---
+layout: default
+---
+<h1> ETL Pipeline for Student Data Utilizing Serverless Functions, S3 and DynamoDB </h1>
+<h2> <b> Tech Stack: AWS Lambda, DynamoDB, S3, Python, Boto, CloudWatch, JSON </b> </h2>
 
-You can use the [editor on GitHub](https://github.com/gallur/ETL-Lambdas-DynamoDB/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
+<h3> I wanted to explore how serverless technologies can help in ETL pipelining for student data. Here, I stored each students data in a JSON file. I created a DynamoDB table as shown below, with the Primary key as "StudentID" which was also an entry in the individual JSON files for each student. </h3>
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+<img src="https://4.bp.blogspot.com/-SuybhWyizhc/W-Tysf8-oxI/AAAAAAAAACc/swTRF8imMXcxXfSmwEPRp_AjIraRvvyewCLcBGAs/s1600/Dynamo.png" alt = "DynamoDB" height = 300 width = 500>
 
-### Markdown
+<h3> DynamoDB is a NoSQL database that utilizes a primary to differentiate different records with the table. </h3>
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+<h3>Post this, I had to provide my serverless functions the right permissions to access S3 and DynamoDB as well as CloudWatch. Hence, I created a new IAM role that provides the following permissions. </h3>
 
-```markdown
-Syntax highlighted code block
+<img src="https://1.bp.blogspot.com/-42mxU-WfI7s/W-TzXRVFIyI/AAAAAAAAACk/liqo3tlKIgwKU1X4Xc03N0qleg9XnRlLgCLcBGAs/s1600/Dynamo.png" alt = "DynamoDB" height = 500 width = 300>
 
-# Header 1
-## Header 2
-### Header 3
+<h3>Once this was done, I went about to create an S3 bucket so that I could link it as a trigger to the Lambda function later on. Once created, it will show up in the Lambda console as a trigger. </h3>
 
-- Bulleted
-- List
+<h3>I created a new Lambda with the following as the handler function:</h3>
 
-1. Numbered
-2. List
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">json</span>
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">boto3</span> <span style="color: #888888">#python module for AWS SDK</span>
+s3_client <span style="color: #333333">=</span> boto3<span style="color: #333333">.</span>client(<span style="background-color: #fff0f0">&#39;s3&#39;</span>)
+dynamoDB_client <span style="color: #333333">=</span> boto3<span style="color: #333333">.</span>resource(<span style="background-color: #fff0f0">&#39;dynamodb&#39;</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">lambda_handler</span>(event, context):
+    <span style="color: #888888"># TODO implement</span>
+    bucket_item <span style="color: #333333">=</span> event[<span style="background-color: #fff0f0">&#39;Records&#39;</span>][<span style="color: #0000DD; font-weight: bold">0</span>][<span style="background-color: #fff0f0">&#39;s3&#39;</span>][<span style="background-color: #fff0f0">&#39;bucket&#39;</span>][<span style="background-color: #fff0f0">&#39;name&#39;</span>]
+    file_item <span style="color: #333333">=</span> event[<span style="background-color: #fff0f0">&#39;Records&#39;</span>][<span style="color: #0000DD; font-weight: bold">0</span>][<span style="background-color: #fff0f0">&#39;s3&#39;</span>][<span style="background-color: #fff0f0">&#39;object&#39;</span>][<span style="background-color: #fff0f0">&#39;key&#39;</span>]
+    json_obj <span style="color: #333333">=</span> s3_client<span style="color: #333333">.</span>get_object(Bucket<span style="color: #333333">=</span>bucket_item,Key<span style="color: #333333">=</span>file_item)
+    json_txt <span style="color: #333333">=</span> json_obj[<span style="background-color: #fff0f0">&#39;Body&#39;</span>]<span style="color: #333333">.</span>read()
+    json_txt2 <span style="color: #333333">=</span> json<span style="color: #333333">.</span>loads(json_txt)
+    table <span style="color: #333333">=</span> dynamoDB_client<span style="color: #333333">.</span>Table(<span style="background-color: #fff0f0">&#39;Students&#39;</span>)
+    table<span style="color: #333333">.</span>put_item(Item<span style="color: #333333">=</span>json_txt2)<span style="color: #333333">.</span>reducer2)]
+</pre></div>
 
-**Bold** and _Italic_ and `Code` text
+<h3> I set up the S3 bucket as the trigger for the Lambda function. Basically, the lambda takes in what is present in the Event object, this is basically a JSON record that has within it the bucket name and file name and we extract this info and use it with the S3_client object to get the data we need. Once I got this data, it was a straightforward put to the DynamoDB table specified in the code. </h3>
 
-[Link](url) and ![Image](src)
-```
+<img src="https://2.bp.blogspot.com/-yMbzW_xG984/W-T0dw8DGII/AAAAAAAAACw/qxJvk4stN44DLFHstJ6HDGGrkyzlCsbVgCLcBGAs/s1600/trigger.png" alt = "DynamoDB" height = 200 width = 500>
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+<h3> Looking at the console for the table in DynamoDB, I can view all the items that have been fed into the NOSQL database. </h3>
 
-### Jekyll Themes
+<img src="https://3.bp.blogspot.com/-zKRLkEDc-yk/W-T1ilxVVsI/AAAAAAAAADI/srN9i4C99HMadbiMXvdJQKKgcXWfM2hXACLcBGAs/s1600/dynamodb.png" alt = "DynamoDB" height = 500 width = 300>
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/gallur/ETL-Lambdas-DynamoDB/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+<h3> Each students JSON looked like below and these were the files I was uploading to S3 </h3>
 
-### Support or Contact
+<img src="https://3.bp.blogspot.com/-jgvH8NfGdPI/W-T1ijcwC8I/AAAAAAAAADM/q3Gzx_dQpwwJouPE8il_3ooWzNQEY9XMQCLcBGAs/s1600/JSON.png" alt = "DynamoDB" height = 300 width = 350>
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+
+
+
